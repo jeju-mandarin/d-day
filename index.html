@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D-Day 계산기</title>
+    <style>
+        /* 기본 스타일 (CSS) */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding-top: 20px; /* 위쪽 여백 추가 */
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 25px 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            text-align: center;
+            width: 90%;
+            max-width: 400px;
+        }
+        h1 {
+            color: #333;
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        input[type="text"],
+        input[type="date"] {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            font-family: inherit;
+        }
+        button {
+            padding: 12px 20px;
+            background-color: #28a745; /* 초록색 계열 */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        #results-container {
+            margin-top: 20px;
+            text-align: left;
+        }
+        .result-item {
+            background-color: #f9f9f9;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+        }
+        .result-item .info {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .result-item .title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+        }
+        .result-item .date {
+            font-size: 0.9rem;
+            color: #777;
+        }
+        .result-item .d-day {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: #d9534f; /* 붉은색 계열 */
+        }
+        /* D-Day가 지난 경우 다른 색상 적용 */
+        .result-item .d-day.passed {
+            color: #0275d8; /* 파란색 계열 */
+        }
+        /* D-Day 당일 */
+        .result-item .d-day.today {
+            color: #28a745; /* 초록색 계열 */
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>⏳ D-Day 계산기</h1>
+        <div class="controls">
+            <input type="date" id="date-picker">
+            <input type="text" id="date-title" placeholder="기념일 제목 (예: 생일)">
+            <button id="calculate-btn">계산하기</button>
+        </div>
+        <div id="results-container">
+            </div>
+    </div>
+
+    <script>
+        // D-Day 계산 로직 (JavaScript)
+        document.getElementById('calculate-btn').addEventListener('click', function() {
+            // 1. 입력 값 가져오기
+            const targetDateInput = document.getElementById('date-picker').value;
+            const targetTitle = document.getElementById('date-title').value;
+            const resultsContainer = document.getElementById('results-container');
+
+            // 2. 날짜가 선택되었는지 확인
+            if (!targetDateInput) {
+                alert('날짜를 선택해주세요!');
+                return;
+            }
+
+            // 3. 날짜 계산 로직
+            
+            // 사용자가 선택한 날짜 (YYYY-MM-DD)
+            // KST(한국 시간) 기준 자정으로 맞추기 위해 T00:00:00 추가
+            const targetDate = new Date(targetDateInput + "T00:00:00");
+
+            // 오늘 날짜 (현재 시간 기준)
+            const today = new Date();
+            // 오늘 날짜를 자정(0시 0분 0초)으로 맞춤
+            const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+            // 4. 시간 차이(ms) 계산 및 일(Day)로 변환
+            const diffMilliseconds = targetDate.getTime() - todayMidnight.getTime();
+            const diffDays = Math.ceil(diffMilliseconds / (1000 * 60 * 60 * 24));
+
+            // 5. 결과 문자열 및 클래스 생성
+            let dDayString = '';
+            let dDayClass = 'd-day';
+
+            if (diffDays === 0) {
+                dDayString = 'D-Day';
+                dDayClass += ' today';
+            } else if (diffDays > 0) {
+                dDayString = `D-${diffDays}`;
+                // dDayClass는 기본값 (붉은색 계열)
+            } else {
+                // diffDays가 -1이면 "D+1"이 되어야 함
+                dDayString = `D+${Math.abs(diffDays)}`;
+                dDayClass += ' passed';
+            }
+
+            // 6. 화면에 표시할 HTML 요소 생성
+            
+            // 제목이 없으면 "기념일"로 기본값 설정
+            const title = targetTitle || '기념일';
+
+            const resultItem = document.createElement('div');
+            resultItem.className = 'result-item';
+            
+            resultItem.innerHTML = `
+                <div class="info">
+                    <span class="title">${title}</span>
+                    <span class="date">${targetDateInput}</span>
+                </div>
+                <span class="${dDayClass}">${dDayString}</span>
+            `;
+
+            // 7. 결과를 목록 맨 위에 추가
+            resultsContainer.prepend(resultItem);
+
+            // 8. (선택) 입력창 초기화
+            // document.getElementById('date-title').value = '';
+            // document.getElementById('date-picker').value = '';
+        });
+    </script>
+
+</body>
+</html>
