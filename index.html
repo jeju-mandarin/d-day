@@ -89,10 +89,21 @@
         .result-item .d-day { font-size: 1.3rem; font-weight: 700; color: #d9534f; }
         .result-item .d-day.passed { color: #0275d8; }
         .result-item .d-day.today { color: #28a745; }
+
+        .site-footer {
+            color: #888;
+            font-size: 0.95rem;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            text-align: center;
+            margin-top: 30px;
+            letter-spacing: 0.02em;
+        }
+        .site-footer p {
+            margin: 0;
+        }
     </style>
 </head>
 <body>
-
     <div class="container">
         <h1>⏳ D-Day 계산기</h1>
         <div class="controls">
@@ -106,6 +117,11 @@
         <div id="results-container">
         </div>
     </div>
+
+    <footer class="site-footer">
+        <p>&copy; 2025 jeju-mandarin. Hosted on GitHub Pages.</p>
+    </footer>
+
 
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://npmcdn.com/flatpickr/dist/l10n/ko.js"></script>
